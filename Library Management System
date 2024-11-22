@@ -84,6 +84,10 @@ History.loan_book(book1, patron1, "22/10/2024", "22/11/2024")
 # Return a book
 History.return_book(book1, patron1)
     
-
+#Results
+Two States is available in the library.
+Harry Potter and the Philosopher's Stone is available in the library.
+Rachel has borrowed Two States. Due date: 22/11/2024
+Rachel has returned Two States
         
         
