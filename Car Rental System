@@ -1,0 +1,107 @@
+# Class for Car
+class Car:
+    def __init__(self, car_id, manufacturer, model, rental_cost):
+        self.car_id = car_id          # Unique identifier for the car
+        self.manufacturer = manufacturer  # Manufacturer of the car
+        self.model = model            # Model of the car
+        self.rental_cost = rental_cost  # Rental cost per day
+        self.is_available = True       # Availability status of the car
+        self.total_income = 0          # Total income generated from rentals
+
+# Class for Customer
+class Customer:
+    def __init__(self, customer_id, name, contact_info):
+        self.customer_id = customer_id
+        self.name = name
+        self.contact_info = contact_info
+        self.rental_history = []
+
+# Class for RentalRecord
+class RentalRecord:
+    def __init__(self, rental_date, car_id, customer_id, rental_cost):
+        self.rental_date = rental_date
+        self.car_id = car_id
+        self.customer_id = customer_id
+        self.rental_cost = rental_cost
+
+# Main CarRentalSystem
+class CarRentalSystem:
+    def __init__(self):
+        self.cars = []
+        self.customers = []
+        self.rental_records = []
+
+    def add_car(self, car_id, manufacturer, model, rental_cost):
+        car = Car(car_id, manufacturer, model, rental_cost)
+        self.cars.append(car)
+
+    def add_customer(self, customer_id, name, email):
+        customer = Customer(customer_id, name, email)
+        self.customers.append(customer)
+
+    def rent_car(self, car_id, customer_id, rental_date):
+        car = next((c for c in self.cars if c.car_id == car_id and c.is_available), None)
+        customer = next((cust for cust in self.customers if cust.customer_id == customer_id), None)
+
+        if car and customer:
+            car.is_available = False
+            rental_cost = car.rental_cost
+            record = RentalRecord(rental_date, car_id, customer_id, rental_cost)
+            self.rental_records.append(record)
+            customer.rental_history.append(record)
+            car.total_income += rental_cost
+            print(f"{customer.name} rented {car.manufacturer} {car.model} on {rental_date}.")
+        else:
+            print("Car not available or customer not found.")
+
+    def return_car(self, car_id):
+        for c in self.cars:
+            if c.car_id == car_id:
+                c.is_available = True
+                print(f"Car {c.manufacturer} {c.model} returned.")
+                return
+        print("Car not found.")
+
+    def view_rental_history(self, customer_id):
+        for cust in self.customers:
+            if cust.customer_id == customer_id:
+                print(f"Rental history for {cust.name}:")
+                for record in cust.rental_history:
+                    print(f"Date: {record.rental_date}, Car ID: {record.car_id}, Cost: {record.rental_cost}")
+                return
+        print("Customer not found.")
+
+    def calculate_rental_income(self, car_id):
+        for car in self.cars:
+            if car.car_id == car_id:
+                print(f"Total income for {car.manufacturer} {car.model}: {car.total_income}")
+                return
+        print("Car not found.")
+
+# Example usage of the system
+rental_system = CarRentalSystem()
+
+# Add cars
+rental_system.add_car("C1", "Mercedes Benz", "G Wagon", 100)
+rental_system.add_car("C2", "BMW", "X5", 90)
+
+# Add customers
+rental_system.add_customer("CU1", "Monica", "Monicagaller@example.com")
+rental_system.add_customer("CU2", "Chandler", "Chandlerbing@example.com")
+
+# Rent cars
+rental_system.rent_car("C1", "CU1", "2024-11-26")
+rental_system.rent_car("C2", "CU2", "2024-11-27")
+
+# Return a car
+rental_system.return_car("C1")
+
+# View rental history
+rental_system.view_rental_history("CU1")
+
+# Calculate rental income
+rental_system.calculate_rental_income("C1")
+    
+
+   
+
