@@ -103,5 +103,13 @@ rental_system.view_rental_history("CU1")
 rental_system.calculate_rental_income("C1")
     
 
-   
+---------------------
+
+#Result
+Monica rented Mercedes Benz G Wagon on 2024-11-26.
+Chandler rented BMW X5 on 2024-11-27.
+Car Mercedes Benz G Wagon returned.
+Rental history for Monica:
+Date: 2024-11-26, Car ID: C1, Cost: 100
+Total income for Mercedes Benz G Wagon: 100
 
