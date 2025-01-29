@@ -1,0 +1,192 @@
+import random
+
+# Card Class - Base class for all cards
+class Card:
+    def __init__(self, name, card_type, attack, health):
+        self.name = name  # Name of the card
+        self.card_type = card_type  # Type of card (e.g., Warrior, Mage)
+        self.attack = attack  # Attack points of the card
+        self.health = health  # Health points of the card
+
+    def take_damage(self, damage):
+        """Reduces the card's health by the given damage."""
+        self.health -= damage
+        if self.health < 0:
+            self.health = 0
+        print(f"{self.name} took {damage} damage. Remaining health: {self.health}")
+
+    def is_destroyed(self):
+        """Checks if the card's health is zero or less."""
+        return self.health == 0
+
+# Warrior Class - Inherits from Card
+class Warrior(Card):
+    def __init__(self, name, attack, health):
+        super().__init__(name, "Warrior", attack, health)
+
+    def use_skill(self, opponent_card):
+        """Triggers the Counterattack skill."""
+        damage = self.attack // 2
+        opponent_card.take_damage(damage)
+        print(f"{self.name} used Counterattack! It dealt {damage} damage to {opponent_card.name}.")
+
+# Mage Class - Inherits from Card
+class Mage(Card):
+    def __init__(self, name, attack, health):
+        super().__init__(name, "Mage", attack, health)
+
+    def use_skill(self, opponent):
+        """Triggers the Fireball skill."""
+        opponent.take_damage(3)
+        print(f"{self.name} used Fireball! {opponent.name} takes 3 damage.")
+
+# Player Class
+class Player:
+    def __init__(self, name):
+        self.name = name  # Name of the player
+        self.health = 20  # Player's starting health
+        self.hand = []  # Cards in the player's hand
+
+    def play_card(self, index):
+        """Selects and removes a card from the player's hand."""
+        return self.hand.pop(index)
+
+    def take_damage(self, damage):
+        """Reduces the player's health by the given damage."""
+        self.health -= damage
+        print(f"{self.name} took {damage} damage. Remaining health: {self.health}")
+
+    def is_defeated(self):
+        """Checks if the player's health is zero or less."""
+        return self.health <= 0
+
+# Game Class
+class Game:
+    def __init__(self):
+        self.player = Player("Player")  # Create the player
+        self.computer = Player("Computer")  # Create the computer opponent
+        self.all_cards = [
+            Warrior("Swordsman", 6, 5),
+            Mage("Fireball Mage", 5, 3)
+        ]
+
+    def deal_cards(self):
+        """Randomly assigns 2 cards to each player."""
+        self.player.hand = random.sample(self.all_cards, 2)
+        self.computer.hand = random.sample(self.all_cards, 2)
+        print(f"{self.player.name} has received: {[card.name for card in self.player.hand]}")
+        print(f"{self.computer.name} has received: {[card.name for card in self.computer.hand]}")
+
+    def start_game(self):
+        """Handles the main game flow."""
+        self.deal_cards()
+        print("Welcome to the Card Battle game! Both players start with 20 health.")
+        
+        while not self.player.is_defeated() and not self.computer.is_defeated():
+            self.player_turn()
+            if self.computer.is_defeated():
+                break
+            self.computer_turn()
+
+        self.check_winner()
+
+    def player_turn(self):
+        """Handles the player's turn."""
+        print(f"\n{self.player.name}'s turn")
+        self.display_hand(self.player)
+        choice = int(input("Choose a card to play (0 or 1): "))
+        player_card = self.player.play_card(choice)
+        computer_card = random.choice(self.computer.hand)
+        self.computer.hand.remove(computer_card)
+
+        print(f"You played {player_card.name}. Computer played {computer_card.name}.")
+        self.battle(player_card, computer_card)
+
+    def computer_turn(self):
+        """Handles the computer's turn."""
+        print(f"\n{self.computer.name}'s turn")
+        player_card = random.choice(self.player.hand)
+        computer_card = random.choice(self.computer.hand)
+        self.player.hand.remove(player_card)
+        self.computer.hand.remove(computer_card)
+
+        print(f"Computer played {computer_card.name}. You lost {player_card.name}.")
+        self.battle(computer_card, player_card)
+
+    def battle(self, card1, card2):
+        """Handles the battle between two cards."""
+        if isinstance(card1, Warrior):
+            card1.use_skill(card2)
+        if isinstance(card2, Warrior):
+            card2.use_skill(card1)
+
+        if isinstance(card1, Mage):
+            card1.use_skill(self.computer)
+        if isinstance(card2, Mage):
+            card2.use_skill(self.player)
+
+        card1.take_damage(card2.attack)
+        card2.take_damage(card1.attack)
+
+        if card1.is_destroyed():
+            print(f"{card1.name} is destroyed!")
+        if card2.is_destroyed():
+            print(f"{card2.name} is destroyed!")
+
+    def check_winner(self):
+        """Determines and announces the winner of the game."""
+        print("\nGame Over!")
+        if self.player.is_defeated():
+            print("Computer wins!")
+        elif self.computer.is_defeated():
+            print("You win!")
+
+    def display_hand(self, player):
+        """Displays the cards in the player's hand."""
+        print("Your cards:")
+        for i, card in enumerate(player.hand):
+            print(f"[{i}] {card.name} - Attack: {card.attack}, Health: {card.health}")
+
+# Main function to start the game
+if __name__ == "__main__":
+    game = Game()
+    game.start_game()
+
+
+
+
+-------------------------------------------------------
+
+#Result
+Player has received: ['Swordsman', 'Fireball Mage']
+Computer has received: ['Swordsman', 'Fireball Mage']
+Welcome to the Card Battle game! Both players start with 20 health.
+
+Player's turn
+Your cards:
+[0] Swordsman - Attack: 6, Health: 5
+[1] Fireball Mage - Attack: 5, Health: 3
+Choose a card to play (0 or 1):  0
+You played Swordsman. Computer played Swordsman.
+Swordsman took 3 damage. Remaining health: 2
+Swordsman used Counterattack! It dealt 3 damage to Swordsman.
+Swordsman took 3 damage. Remaining health: 0
+Swordsman used Counterattack! It dealt 3 damage to Swordsman.
+Swordsman took 6 damage. Remaining health: 0
+Swordsman took 6 damage. Remaining health: 0
+Swordsman is destroyed!
+Swordsman is destroyed!
+
+Computer's turn
+Computer played Fireball Mage. You lost Fireball Mage.
+Computer took 3 damage. Remaining health: 17
+Fireball Mage used Fireball! Computer takes 3 damage.
+Player took 3 damage. Remaining health: 17
+Fireball Mage used Fireball! Player takes 3 damage.
+Fireball Mage took 5 damage. Remaining health: 0
+Fireball Mage took 5 damage. Remaining health: 0
+Fireball Mage is destroyed!
+Fireball Mage is destroyed!
+
+
+
